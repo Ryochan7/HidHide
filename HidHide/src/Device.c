@@ -16,8 +16,8 @@ NTSTATUS HidHideCreateDevice(PWDFDEVICE_INIT wdfDeviceInit)
     WDF_OBJECT_ATTRIBUTES wdfObjectAttributes;
     WDF_FILEOBJECT_CONFIG wdfFileObjectConfig;
     WDFDEVICE             wdfDevice;
-    WDF_IO_QUEUE_CONFIG   wdfIoQueueConfig;
-    WDFQUEUE              wdfQueue;
+    //WDF_IO_QUEUE_CONFIG   wdfIoQueueConfig;
+    //WDFQUEUE              wdfQueue;
     NTSTATUS              ntstatus;
 
     // This is a filter
@@ -27,6 +27,13 @@ NTSTATUS HidHideCreateDevice(PWDFDEVICE_INIT wdfDeviceInit)
     wdfObjectAttributes.SynchronizationScope = WdfSynchronizationScopeNone;
     WDF_FILEOBJECT_CONFIG_INIT(&wdfFileObjectConfig, OnDeviceFileCreate, WDF_NO_EVENT_CALLBACK, OnDeviceFileCleanup);
     WdfDeviceInitSetFileObjectConfig(wdfDeviceInit, &wdfFileObjectConfig, &wdfObjectAttributes);
+
+    WDF_IO_TYPE_CONFIG ioConfig;
+    WDF_IO_TYPE_CONFIG_INIT(&ioConfig);
+    ioConfig.ReadWriteIoType = WdfDeviceIoDirect;
+    ioConfig.DeviceControlIoType = WdfDeviceIoDirect;
+    ioConfig.DirectTransferThreshold = 32;
+    WdfDeviceInitSetIoTypeEx(wdfDeviceInit, &ioConfig);
 
     // Create the device
     WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&wdfObjectAttributes, DEVICE_CONTEXT);
@@ -39,10 +46,11 @@ NTSTATUS HidHideCreateDevice(PWDFDEVICE_INIT wdfDeviceInit)
     if (!NT_SUCCESS(ntstatus)) LOG_AND_RETURN_NTSTATUS(L"WdfDeviceCreateDeviceInterface", ntstatus);
 
     // Create the I/O requests queue
-    WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&wdfIoQueueConfig, WdfIoQueueDispatchParallel);
+    /*WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&wdfIoQueueConfig, WdfIoQueueDispatchParallel);
     wdfIoQueueConfig.EvtIoDefault = HidHideDeviceEvtIoDefault;
     ntstatus = WdfIoQueueCreate(wdfDevice, &wdfIoQueueConfig, WDF_NO_OBJECT_ATTRIBUTES, &wdfQueue);
     if (!NT_SUCCESS(ntstatus)) LOG_AND_RETURN_NTSTATUS(L"WdfIoQueueCreate", ntstatus);
+    */
 
     // Initilize the device context for future usage
     ntstatus = OnDeviceCreate(wdfDevice);
