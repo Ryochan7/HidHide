@@ -28,12 +28,13 @@ NTSTATUS HidHideCreateDevice(PWDFDEVICE_INIT wdfDeviceInit)
     WDF_FILEOBJECT_CONFIG_INIT(&wdfFileObjectConfig, OnDeviceFileCreate, WDF_NO_EVENT_CALLBACK, OnDeviceFileCleanup);
     WdfDeviceInitSetFileObjectConfig(wdfDeviceInit, &wdfFileObjectConfig, &wdfObjectAttributes);
 
-    WDF_IO_TYPE_CONFIG ioConfig;
+    /*WDF_IO_TYPE_CONFIG ioConfig;
     WDF_IO_TYPE_CONFIG_INIT(&ioConfig);
     ioConfig.ReadWriteIoType = WdfDeviceIoDirect;
     ioConfig.DeviceControlIoType = WdfDeviceIoDirect;
     ioConfig.DirectTransferThreshold = 32;
     WdfDeviceInitSetIoTypeEx(wdfDeviceInit, &ioConfig);
+    */
 
     // Create the device
     WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&wdfObjectAttributes, DEVICE_CONTEXT);
