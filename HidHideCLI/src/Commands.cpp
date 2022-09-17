@@ -7,24 +7,51 @@
 #include "Utils.h"
 #include "Volume.h"
 #include "Logging.h"
+#include <sstream>
+#include <iomanip>
 
 namespace
 {
+    // https://stackoverflow.com/a/33799784
+    std::wstring escape_json(const std::wstring &s) {
+        std::wostringstream o;
+        for (const wchar_t c : s)
+        {
+            switch (c) {
+            case L'"': o << L"\\\""; break;
+            case L'\\': o << L"\\\\"; break;
+            case L'\b': o << L"\\b"; break;
+            case L'\f': o << L"\\f"; break;
+            case L'\n': o << L"\\n"; break;
+            case L'\r': o << L"\\r"; break;
+            case L'\t': o << L"\\t"; break;
+            default:
+                if (L'\x00' <= c && c <= L'\x1f') {
+                    o << "\\u"
+                      << std::hex << std::setw(4) << std::setfill(L'0') << static_cast<int>(c);
+                } else {
+                    o << c;
+                }
+            }
+        }
+        return o.str();
+    }
+    
     // Serialize the HidDeviceInformation in a JSON format
     std::wostream& operator<<(_Inout_ std::wostream& os, _In_ HidHide::HidDeviceInformation const& hidDeviceInformation)
     {
         os  << L"{ " \
             << L"\"present\" : " << std::boolalpha << hidDeviceInformation.present << L" ," << std::endl \
             << L"\"gamingDevice\" : " << std::boolalpha << hidDeviceInformation.gamingDevice << L" ," << std::endl \
-            << L"\"symbolicLink\" : \"" << hidDeviceInformation.symbolicLink.wstring() << L"\" ," << std::endl \
-            << L"\"vendor\" : \"" << hidDeviceInformation.vendor << L"\" ," << std::endl \
-            << L"\"product\" : \"" << hidDeviceInformation.product << L"\" ," << std::endl \
-            << L"\"serialNumber\" : \"" << hidDeviceInformation.serialNumber << L"\" ," << std::endl \
-            << L"\"usage\" : \"" << hidDeviceInformation.usage << L"\" ," << std::endl \
-            << L"\"description\" : \"" << hidDeviceInformation.description << L"\" ," << std::endl \
-            << L"\"deviceInstancePath\" : \"" << hidDeviceInformation.deviceInstancePath << L"\" ," << std::endl \
-            << L"\"baseContainerDeviceInstancePath\" : \"" << hidDeviceInformation.baseContainerDeviceInstancePath << L"\" ," << std::endl \
-            << L"\"baseContainerClassGuid\" : \"" << HidHide::GuidToString(hidDeviceInformation.baseContainerClassGuid) << L"\" ," << std::endl \
+            << L"\"symbolicLink\" : \"" << escape_json(hidDeviceInformation.symbolicLink.wstring()) << L"\" ," << std::endl \
+            << L"\"vendor\" : \"" << escape_json(hidDeviceInformation.vendor) << L"\" ," << std::endl \
+            << L"\"product\" : \"" << escape_json(hidDeviceInformation.product) << L"\" ," << std::endl \
+            << L"\"serialNumber\" : \"" << escape_json(hidDeviceInformation.serialNumber) << L"\" ," << std::endl \
+            << L"\"usage\" : \"" << escape_json(hidDeviceInformation.usage) << L"\" ," << std::endl \
+            << L"\"description\" : \"" << escape_json(hidDeviceInformation.description) << L"\" ," << std::endl \
+            << L"\"deviceInstancePath\" : \"" << escape_json(hidDeviceInformation.deviceInstancePath) << L"\" ," << std::endl \
+            << L"\"baseContainerDeviceInstancePath\" : \"" << escape_json(hidDeviceInformation.baseContainerDeviceInstancePath) << L"\" ," << std::endl \
+            << L"\"baseContainerClassGuid\" : \"" << escape_json(HidHide::GuidToString(hidDeviceInformation.baseContainerClassGuid)) << L"\" ," << std::endl \
             << L"\"baseContainerDeviceCount\" : " << hidDeviceInformation.baseContainerDeviceCount << L" }";
         return (os);
     }
@@ -51,7 +78,7 @@ namespace
         for (auto const& hidContainer : hidDevices)
         {
             if (first) first = false; else os << L"," << std::endl;
-            os << L"{ \"friendlyName\" : " << hidContainer.first << L"\" , \"devices\" :" << hidContainer.second << L"} ";
+            os << L"{ \"friendlyName\" : \"" << escape_json(hidContainer.first) << L"\" , \"devices\" :" << hidContainer.second << L"} ";
         }
         os << L"] " << std::endl;
         return (os);
@@ -70,6 +97,9 @@ namespace HidHide
             { L"app-reg",      { StringTable(IDS_CLI_SYNTAX_APP_PATH),      StringTable(IDS_CLI_APP_REG),      std::bind(&CommandInterpreter::AppReg,      this, std::placeholders::_1), std::bind(&CommandInterpreter::ValOneFullyQualifiedExecutablePath, this, std::placeholders::_1) } },
             { L"app-unreg",    { StringTable(IDS_CLI_SYNTAX_APP_PATH),      StringTable(IDS_CLI_APP_UNREG),    std::bind(&CommandInterpreter::AppUnreg,    this, std::placeholders::_1), std::bind(&CommandInterpreter::ValOneFullyQualifiedExecutablePath, this, std::placeholders::_1) } },
             { L"app-clean",    { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_APP_CLEAN),    std::bind(&CommandInterpreter::AppClean,    this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
+            { L"inv-off",      { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_INV_OFF),      std::bind(&CommandInterpreter::InvOff,      this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
+            { L"inv-on",       { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_INV_ON),       std::bind(&CommandInterpreter::InvOn,       this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
+            { L"inv-state",    { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_INV_STATE),    std::bind(&CommandInterpreter::InvState,    this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
             { L"cancel",       { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_CANCEL),       std::bind(&CommandInterpreter::Cancel,      this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
             { L"cloak-off",    { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_CLOAK_OFF),    std::bind(&CommandInterpreter::CloakOff,    this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
             { L"cloak-on",     { StringTable(IDS_CLI_SYNTAX_NO_ARGUMENTS),  StringTable(IDS_CLI_CLOAK_ON),     std::bind(&CommandInterpreter::CloakOn,     this, std::placeholders::_1), std::bind(&CommandInterpreter::ValNoArguments, this, std::placeholders::_1) } },
@@ -229,7 +259,7 @@ namespace HidHide
     void CommandInterpreter::DevAll(Args const&) const
     {
         TRACE_ALWAYS(L"");
-        std::wcout << HidHide::HidDevices(true) << std::endl;
+        std::wcout << HidHide::HidDevices(false) << std::endl;
     }
 
     _Use_decl_annotations_
@@ -258,5 +288,26 @@ namespace HidHide
     {
         TRACE_ALWAYS(L"");
         std::wcout << (m_FilterDriverProxy.GetActive() ? L"--cloak-on" : L"--cloak-off") << std::endl;
+    }
+
+    _Use_decl_annotations_
+        void CommandInterpreter::InvOn(Args const&)
+    {
+        TRACE_ALWAYS(L"");
+        m_FilterDriverProxy.SetInverse(true);
+    }
+
+    _Use_decl_annotations_
+        void CommandInterpreter::InvOff(Args const&)
+    {
+        TRACE_ALWAYS(L"");
+        m_FilterDriverProxy.SetInverse(false);
+    }
+
+    _Use_decl_annotations_
+        void CommandInterpreter::InvState(Args const&) const
+    {
+        TRACE_ALWAYS(L"");
+        std::wcout << (m_FilterDriverProxy.GetInverse() ? L"--inv-on" : L"--inv-off") << std::endl;
     }
 }

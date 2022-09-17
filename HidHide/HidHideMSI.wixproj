@@ -10,7 +10,7 @@
     <OutputType>Package</OutputType>
     <BldCompanyName>Nefarius Software Solutions e.U.</BldCompanyName>
     <BldProductName>HidHide</BldProductName>
-    <BldProductVersion>1.1.50.0</BldProductVersion>
+    <BldProductVersion>1.2.87.0</BldProductVersion>
     <BldCopyright>Eric Korff de Gidts</BldCopyright>
     <BldProductVersionMajor>$([System.Text.RegularExpressions.Regex]::Match($(BldProductVersion), "(\d{1,3}).(\d{1,3}).(\d{1,5}).(\d{1,3})").Groups[1].Value)</BldProductVersionMajor>
     <BldProductVersionMinor>$([System.Text.RegularExpressions.Regex]::Match($(BldProductVersion), "(\d{1,3}).(\d{1,3}).(\d{1,5}).(\d{1,3})").Groups[2].Value)</BldProductVersionMinor>
@@ -44,6 +44,25 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Production Release|Any CPU' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <BldParameters>BldCompanyName=$(BldCompanyName);BldProductName=$(BldProductName);BldProductVersion=$(BldProductVersion);BldProductVersionMajor=$(BldProductVersionMajor);BldProductVersionMinor=$(BldProductVersionMinor);BldProductVersionRevision=$(BldProductVersionRevision);BldProductVersionBuild=$(BldProductVersionBuild);BldProductDescription=$(BldProductDescription);BldCopyright=$(BldCopyright);</BldParameters>
+    <DefineConstants>ProductionRelease=false;Debug;NuspecBasePath=$(NuspecBasePath);$(BldParameters)$(DefineConstants)</DefineConstants>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
+    <SuppressIces>ICE40;ICE61</SuppressIces>
+    <SignOutput Condition="('$(BldCertificateThumbprint)' != '')">true</SignOutput>
+    <TargetPdbFileName Condition="('$(TargetPdbFileName)' == '')">$(OutputName).wixpdb</TargetPdbFileName>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Any CPU' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>

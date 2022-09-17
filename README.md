@@ -1,6 +1,11 @@
 # HidHide
 
-[![Build status](https://ci.appveyor.com/api/projects/status/s3t4ffx5fnfw5g65/branch/master?svg=true)](https://ci.appveyor.com/project/nefarius/hidhide/branch/master) [![GitHub All Releases](https://img.shields.io/github/downloads/ViGEm/HidHide/total)](https://somsubhra.github.io/github-release-stats/?username=ViGEm&repository=HidHide)
+[![Build status](https://ci.appveyor.com/api/projects/status/s3t4ffx5fnfw5g65/branch/master?svg=true)](https://ci.appveyor.com/project/nefarius/hidhide/branch/master)
+[![GitHub All Releases](https://img.shields.io/github/downloads/ViGEm/HidHide/total)](https://somsubhra.github.io/github-release-stats/?username=ViGEm&repository=HidHide)
+[![Chocolatey package](https://img.shields.io/chocolatey/dt/hidhide?color=blue&label=chocolatey)](https://community.chocolatey.org/packages/hidhide)
+![Lines of code](https://img.shields.io/tokei/lines/github/ViGEm/HidHide)
+![GitHub issues by-label](https://img.shields.io/github/issues/ViGEm/HidHide/bug)
+![GitHub issues by-label](https://img.shields.io/github/issues/ViGEm/HidHide/enhancement)
 
 ## Introduction
 
@@ -33,7 +38,7 @@ multiple notifications while binding game functions and device controls.
 
 ## Package content
 
-*HidHide* is a kernel-mode filter driver available for Windows 8.1 or higher (KMDF 1.13+). It comes with a configuration
+*HidHide* is a kernel-mode filter driver available for **Windows 10** or higher (KMDF 1.13+). It comes with a configuration
 utility via which the driver is configured and controlled. The filter driver starts automatically and runs unattended
 with system privileges. A system reboot may be triggered after driver installation or removal. The configuration utility
 runs in the least privileged mode and doesn't require elevated rights.
