@@ -42,9 +42,13 @@ HidHide_Device_CopyFiles               = 12 ; %windir%\System32\DRIVERS\
 
 [HidHide_Device]
 CopyFiles                              = HidHide_Device_CopyFiles
+AddReg                                 = HidHide_Device_AddReg
 
 [HidHide_Device_CopyFiles]
 HidHide.sys,,,0x00004000 ; COPYFLG_IN_USE_RENAME
+
+[HidHide_Device_AddReg]
+HKLM,"System\CurrentControlSet\Control\Class\{745a17a0-74d3-11d0-b6fe-00a0c90f57da}","UpperFilters",0x00010008,"HidHide" ; FLG_ADDREG_TYPE_MULTI_SZ | FLG_ADDREG_APPEND
 
 ; ==== DDInstall.Services Section ====
 
